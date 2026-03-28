@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vantage — Web Design & Marketing</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:#09090a;
+  --black2:#111113;
+  --black3:#18181c;
+  --black4:#1f1f24;
+  --gold:#c9a84c;
+  --gold2:#e8c97a;
+  --gold3:#f5e4b0;
+  --gold-dim:rgba(201,168,76,0.12);
+  --gold-line:rgba(201,168,76,0.25);
+  --text:#f0ede8;
+  --text2:#a09890;
+  --text3:#5a524a;
+  --serif:'Cormorant Garamond',serif;
+  --sans:'Outfit',sans-serif;
+  --mono:'DM Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--black);color:var(--text);font-family:var(--sans);overflow-x:hidden;}
+
+/* GRAIN OVERLAY */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9998;opacity:0.35;
+}
+
+/* CURSOR */
+.cur{position:fixed;width:8px;height:8px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width 0.2s,height 0.2s;}
+.cur-ring{position:fixed;width:30px;height:30px;border:1px solid rgba(201,168,76,0.5);border-radius:50%;pointer-events:none;z-index:9997;transform:translate(-50%,-50%);transition:transform 0.1s ease;}
+.cur.expand{width:20px;height:20px;background:transparent;border:1px solid var(--gold);}
+.cur-ring.expand{width:50px;height:50px;opacity:0.3;}
+body{cursor:none;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:28px 6%;display:flex;align-items:center;justify-content:space-between;transition:all 0.4s;}
+nav.scrolled{background:rgba(9,9,10,0.92);backdrop-filter:blur(20px);padding:18px 6%;border-bottom:1px solid var(--gold-line);}
+.logo{font-family:var(--serif);font-size:22px;font-weight:300;letter-spacing:5px;color:var(--gold);text-decoration:none;text-transform:uppercase;}
+.logo em{font-style:italic;color:var(--text2);}
+.nav-links{display:flex;gap:40px;list-style:none;}
+.nav-links a{font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--text3);text-decoration:none;transition:color 0.3s;}
+.nav-links a:hover{color:var(--gold);}
+.nav-cta{font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--black);background:var(--gold);padding:11px 28px;text-decoration:none;transition:all 0.3s;}
+.nav-cta:hover{background:var(--gold2);}
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;}
+.hamburger span{width:22px;height:1px;background:var(--gold);display:block;transition:all 0.3s;}
+
+/* MOBILE MENU */
+.mob-menu{position:fixed;inset:0;background:var(--black);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;transform:translateY(-100%);transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);}
+.mob-menu.open{transform:translateY(0);}
+.mob-menu a{font-family:var(--serif);font-size:42px;font-weight:300;letter-spacing:4px;color:var(--text);text-decoration:none;transition:color 0.2s;}
+.mob-menu a:hover{color:var(--gold);}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 6% 80px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 80% 20%,rgba(201,168,76,0.04) 0%,transparent 55%),radial-gradient(ellipse at 10% 80%,rgba(201,168,76,0.03) 0%,transparent 40%);}
+/* Vertical gold rule */
+.hero-rule{position:absolute;top:0;left:6%;width:1px;height:100%;background:linear-gradient(to bottom,transparent,var(--gold-line) 20%,var(--gold-line) 80%,transparent);}
+.hero-num{position:absolute;top:32px;right:6%;font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--text3);}
+.hero-content{position:relative;z-index:2;max-width:1100px;}
+.hero-label{font-family:var(--mono);font-size:11px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;margin-bottom:28px;opacity:0;animation:fadeUp 1s 0.3s forwards;}
+.hero-title{font-family:var(--serif);font-size:clamp(64px,8.5vw,130px);font-weight:300;line-height:1;letter-spacing:-1px;margin-bottom:40px;opacity:0;animation:fadeUp 1s 0.5s forwards;}
+.hero-title em{font-style:italic;color:var(--gold);}
+.hero-title .block{display:block;}
+.hero-bottom{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:24px;opacity:0;animation:fadeUp 1s 0.8s forwards;}
+.hero-sub{font-size:15px;font-weight:300;color:var(--text2);line-height:1.8;max-width:380px;}
+.hero-sub strong{color:var(--text);font-weight:400;}
+.hero-actions{display:flex;gap:16px;align-items:center;}
+.btn-gold{background:var(--gold);color:var(--black);font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;padding:15px 36px;text-decoration:none;transition:all 0.3s;display:inline-block;}
+.btn-gold:hover{background:var(--gold2);}
+.btn-ghost{color:var(--gold);font-family:var(--sans);font-size:11px;font-weight:500;letter-spacing:3px;text-transform:uppercase;text-decoration:none;display:flex;align-items:center;gap:10px;transition:gap 0.3s;}
+.btn-ghost::after{content:'→';}
+.btn-ghost:hover{gap:16px;}
+.hero-scroll{position:absolute;bottom:40px;right:6%;display:flex;flex-direction:column;align-items:center;gap:10px;}
+.scroll-dot{width:1px;height:60px;background:linear-gradient(to bottom,var(--gold),transparent);position:relative;}
+
+/* DIVIDER */
+.divider{display:flex;align-items:center;gap:0;padding:0 6%;overflow:hidden;}
+.divider-line{flex:1;height:1px;background:var(--gold-line);}
+.divider-text{font-family:var(--mono);font-size:10px;letter-spacing:4px;color:var(--text3);text-transform:uppercase;padding:20px 28px;white-space:nowrap;}
+
+/* ABOUT */
+.about{padding:120px 6%;display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:center;}
+.about-label{font-family:var(--mono);font-size:10px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;margin-bottom:24px;}
+.about-title{font-family:var(--serif);font-size:clamp(42px,5vw,72px);font-weight:300;line-height:1.1;margin-bottom:32px;}
+.about-title em{font-style:italic;color:var(--gold);}
+.about-body{font-size:15px;font-weight:300;color:var(--text2);line-height:1.9;margin-bottom:24px;}
+.about-body strong{color:var(--text);font-weight:400;}
+.about-stats{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:60px;}
+.stat-box{background:var(--black3);padding:32px 28px;border:1px solid rgba(201,168,76,0.08);transition:border-color 0.3s;}
+.stat-box:hover{border-color:var(--gold-line);}
+.stat-num{font-family:var(--serif);font-size:52px;font-weight:300;color:var(--gold);line-height:1;}
+.stat-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin-top:8px;}
+.about-right{position:relative;}
+.about-card{background:var(--black3);border:1px solid var(--gold-line);padding:52px 44px;position:relative;}
+.about-card::before{content:'';position:absolute;top:-1px;left:40px;width:60px;height:2px;background:var(--gold);}
+.service-list{list-style:none;display:flex;flex-direction:column;}
+.service-item{padding:20px 0;border-bottom:1px solid rgba(201,168,76,0.08);display:flex;justify-content:space-between;align-items:center;cursor:default;transition:all 0.2s;}
+.service-item:last-child{border-bottom:none;}
+.service-item:hover .svc-name{color:var(--gold);}
+.service-item:hover .svc-arrow{opacity:1;transform:translateX(0);}
+.svc-name{font-family:var(--serif);font-size:20px;font-weight:300;transition:color 0.2s;}
+.svc-tag{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--text3);}
+.svc-arrow{color:var(--gold);opacity:0;transform:translateX(-6px);transition:all 0.2s;}
+
+/* WORK / PORTFOLIO */
+.work{padding:120px 6%;background:var(--black2);}
+.section-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:70px;flex-wrap:wrap;gap:24px;}
+.section-label{font-family:var(--mono);font-size:10px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;margin-bottom:16px;}
+.section-title{font-family:var(--serif);font-size:clamp(38px,4.5vw,64px);font-weight:300;line-height:1.1;}
+.section-title em{font-style:italic;color:var(--gold);}
+.section-link{font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--text3);text-decoration:none;text-transform:uppercase;display:flex;align-items:center;gap:8px;transition:color 0.2s;white-space:nowrap;}
+.section-link:hover{color:var(--gold);}
+.work-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+.work-card{position:relative;overflow:hidden;background:var(--black3);aspect-ratio:4/3;display:flex;align-items:flex-end;}
+.work-card.tall{aspect-ratio:3/4;}
+.work-card-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:100px;transition:transform 0.6s cubic-bezier(0.16,1,0.3,1);}
+.work-card:hover .work-card-bg{transform:scale(1.05);}
+.work-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(9,9,10,0.95) 30%,rgba(9,9,10,0.2));}
+.work-content{position:relative;z-index:2;padding:32px;width:100%;}
+.work-tag{font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;}
+.work-title{font-family:var(--serif);font-size:28px;font-weight:300;margin-bottom:6px;}
+.work-sub{font-size:13px;color:var(--text3);}
+.work-card-link{position:absolute;top:24px;right:24px;width:36px;height:36px;border:1px solid rgba(201,168,76,0.3);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:14px;text-decoration:none;opacity:0;transform:translateY(-6px);transition:all 0.3s;}
+.work-card:hover .work-card-link{opacity:1;transform:translateY(0);}
+.work-card-link:hover{background:var(--gold);color:var(--black);}
+
+/* PROCESS */
+.process{padding:120px 6%;}
+.process-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:70px;}
+.process-step{background:var(--black3);padding:44px 32px;border:1px solid rgba(201,168,76,0.06);position:relative;overflow:hidden;transition:border-color 0.3s;}
+.process-step:hover{border-color:var(--gold-line);}
+.step-num{font-family:var(--serif);font-size:80px;font-weight:300;color:rgba(201,168,76,0.06);position:absolute;top:10px;right:20px;line-height:1;transition:color 0.3s;}
+.process-step:hover .step-num{color:rgba(201,168,76,0.12);}
+.step-icon{font-size:22px;margin-bottom:24px;}
+.step-title{font-family:var(--serif);font-size:22px;font-weight:300;margin-bottom:12px;}
+.step-text{font-size:13px;font-weight:300;color:var(--text3);line-height:1.8;}
+
+/* PRICING */
+.pricing{padding:120px 6%;background:var(--black2);}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:70px;}
+.price-card{background:var(--black3);border:1px solid rgba(201,168,76,0.08);padding:52px 40px;position:relative;transition:border-color 0.3s;}
+.price-card:hover{border-color:var(--gold-line);}
+.price-card.featured{background:var(--black4);border-color:var(--gold-line);}
+.price-card.featured::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.price-badge{position:absolute;top:24px;right:24px;font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--black);background:var(--gold);padding:4px 12px;text-transform:uppercase;}
+.price-plan{font-family:var(--mono);font-size:10px;letter-spacing:4px;color:var(--text3);text-transform:uppercase;margin-bottom:24px;}
+.price-amount{font-family:var(--serif);font-size:58px;font-weight:300;color:var(--gold);line-height:1;margin-bottom:6px;}
+.price-amount sup{font-size:22px;vertical-align:top;margin-top:12px;display:inline-block;}
+.price-note{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px;margin-bottom:40px;}
+.price-features{list-style:none;display:flex;flex-direction:column;gap:0;margin-bottom:44px;}
+.price-feature{padding:13px 0;border-bottom:1px solid rgba(201,168,76,0.06);font-size:13px;font-weight:300;color:var(--text2);display:flex;gap:12px;align-items:center;}
+.price-feature:last-child{border-bottom:none;}
+.price-feature .tick{color:var(--gold);font-size:12px;}
+.price-feature .off{color:var(--text3);}
+.price-btn{display:block;text-align:center;font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;padding:14px;text-decoration:none;transition:all 0.3s;}
+.price-card:not(.featured) .price-btn{border:1px solid var(--gold-line);color:var(--gold);}
+.price-card:not(.featured) .price-btn:hover{background:var(--gold-dim);border-color:var(--gold);}
+.price-card.featured .price-btn{background:var(--gold);color:var(--black);}
+.price-card.featured .price-btn:hover{background:var(--gold2);}
+
+/* CONTACT */
+.contact{padding:120px 6%;}
+.contact-wrap{display:grid;grid-template-columns:1fr 1fr;gap:100px;margin-top:70px;}
+.contact-info{display:flex;flex-direction:column;gap:0;}
+.contact-intro{font-family:var(--serif);font-size:clamp(32px,4vw,52px);font-weight:300;line-height:1.2;margin-bottom:40px;}
+.contact-intro em{font-style:italic;color:var(--gold);}
+.contact-detail{padding:24px 0;border-bottom:1px solid rgba(201,168,76,0.08);display:flex;gap:20px;align-items:flex-start;}
+.contact-detail:last-child{border-bottom:none;}
+.detail-icon{width:36px;height:36px;border:1px solid var(--gold-line);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.detail-title{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:4px;}
+.detail-text{font-size:14px;font-weight:300;color:var(--text2);line-height:1.6;}
+.contact-form{display:flex;flex-direction:column;gap:0;}
+.form-field{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+.form-field label{font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--text3);text-transform:uppercase;}
+.form-field input,.form-field textarea,.form-field select{background:var(--black3);border:none;border-bottom:1px solid rgba(201,168,76,0.2);color:var(--text);font-family:var(--sans);font-size:15px;font-weight:300;padding:14px 0;outline:none;width:100%;resize:none;transition:border-color 0.3s;-webkit-appearance:none;}
+.form-field input:focus,.form-field textarea:focus,.form-field select:focus{border-bottom-color:var(--gold);}
+.form-field select option{background:var(--black3);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.form-submit{background:var(--gold);color:var(--black);font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;padding:16px 40px;border:none;cursor:pointer;transition:all 0.3s;align-self:flex-start;margin-top:8px;position:relative;overflow:hidden;}
+.form-submit::before{content:'';position:absolute;inset:0;background:var(--gold2);transform:translateX(-101%);transition:transform 0.3s;}
+.form-submit span{position:relative;z-index:1;}
+.form-submit:hover::before{transform:translateX(0);}
+
+/* FOOTER */
+footer{background:var(--black);border-top:1px solid var(--gold-line);padding:60px 6% 36px;}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr;gap:60px;margin-bottom:60px;}
+.footer-logo{font-family:var(--serif);font-size:26px;font-weight:300;letter-spacing:5px;color:var(--gold);text-decoration:none;text-transform:uppercase;display:block;margin-bottom:16px;}
+.footer-logo em{font-style:italic;color:var(--text3);}
+.footer-tagline{font-size:13px;font-weight:300;color:var(--text3);line-height:1.8;max-width:280px;margin-bottom:28px;}
+.footer-socials{display:flex;gap:10px;}
+.footer-social{width:34px;height:34px;border:1px solid rgba(201,168,76,0.2);display:flex;align-items:center;justify-content:center;color:var(--text3);text-decoration:none;font-size:14px;transition:all 0.2s;}
+.footer-social:hover{border-color:var(--gold);color:var(--gold);}
+.footer-col-title{font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:20px;}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:12px;}
+.footer-links a{font-size:13px;font-weight:300;color:var(--text3);text-decoration:none;transition:color 0.2s;}
+.footer-links a:hover{color:var(--text);}
+.footer-bottom{border-top:1px solid rgba(201,168,76,0.08);padding-top:28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.footer-copy{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--text3);}
+.footer-copy a{color:var(--gold);text-decoration:none;}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.8s ease,transform 0.8s ease;}
+.reveal.up{opacity:1;transform:translateY(0);}
+.reveal-left{opacity:0;transform:translateX(-24px);transition:opacity 0.8s ease,transform 0.8s ease;}
+.reveal-left.up{opacity:1;transform:translateX(0);}
+.reveal-right{opacity:0;transform:translateX(24px);transition:opacity 0.8s ease,transform 0.8s ease;}
+.reveal-right.up{opacity:1;transform:translateX(0);}
+
+/* MARQUEE */
+.marquee-wrap{padding:0;overflow:hidden;border-top:1px solid var(--gold-line);border-bottom:1px solid var(--gold-line);}
+.marquee-track{display:flex;white-space:nowrap;animation:marquee 24s linear infinite;padding:18px 0;}
+.marquee-item{font-family:var(--serif);font-size:16px;font-weight:300;font-style:italic;color:var(--text3);padding:0 36px;}
+.marquee-item span{color:var(--gold);margin:0 12px;font-style:normal;font-size:10px;}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes marquee{to{transform:translateX(-50%)}}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  .nav-links,.nav-cta{display:none;}
+  .hamburger{display:flex;}
+  .about{grid-template-columns:1fr;gap:60px;}
+  .work-grid{grid-template-columns:1fr;}
+  .work-card.tall{aspect-ratio:4/3;}
+  .process-steps{grid-template-columns:1fr 1fr;}
+  .pricing-grid{grid-template-columns:1fr;}
+  .contact-wrap{grid-template-columns:1fr;}
+  .footer-top{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:600px){
+  .process-steps{grid-template-columns:1fr;}
+  .footer-top{grid-template-columns:1fr;}
+  .form-row{grid-template-columns:1fr;}
+  .hero-title{font-size:52px;}
+  .about-stats{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="cur-ring"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="logo">Van<em>tage</em></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#work">Work</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Get a Quote</a>
+  <button class="hamburger" onclick="toggleMob()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mob-menu" id="mob-menu">
+  <a href="#about" onclick="toggleMob()">About</a>
+  <a href="#work" onclick="toggleMob()">Work</a>
+  <a href="#pricing" onclick="toggleMob()">Pricing</a>
+  <a href="#contact" onclick="toggleMob()">Contact</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-rule"></div>
+  <div class="hero-num">001 / VANTAGE</div>
+  <div class="hero-content">
+    <p class="hero-label">Web Design & Marketing Studio</p>
+    <h1 class="hero-title">
+      <span class="block">We build brands</span>
+      <span class="block">that <em>command</em></span>
+      <span class="block">attention.</span>
+    </h1>
+    <div class="hero-bottom">
+      <p class="hero-sub">Premium digital experiences for businesses that refuse to be average. <strong>Strategy, design, and growth — under one roof.</strong></p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn-gold">Start a Project</a>
+        <a href="#work" class="btn-ghost">View Work</a>
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-dot"></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item">Web Design <span>✦</span></span>
+    <span class="marquee-item">Brand Identity <span>✦</span></span>
+    <span class="marquee-item">Digital Marketing <span>✦</span></span>
+    <span class="marquee-item">SEO & Growth <span>✦</span></span>
+    <span class="marquee-item">Landing Pages <span>✦</span></span>
+    <span class="marquee-item">Social Media <span>✦</span></span>
+    <span class="marquee-item">Web Design <span>✦</span></span>
+    <span class="marquee-item">Brand Identity <span>✦</span></span>
+    <span class="marquee-item">Digital Marketing <span>✦</span></span>
+    <span class="marquee-item">SEO & Growth <span>✦</span></span>
+    <span class="marquee-item">Landing Pages <span>✦</span></span>
+    <span class="marquee-item">Social Media <span>✦</span></span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div>
+    <p class="about-label reveal">About Vantage</p>
+    <h2 class="about-title reveal">Precision design.<br><em>Real results.</em></h2>
+    <p class="about-body reveal">We are a boutique web design and marketing studio. We don't do volume — we do <strong>quality</strong>. Every project gets our full attention, built from scratch, tailored to your market.</p>
+    <p class="about-body reveal">From high-converting websites to performance marketing campaigns, we give small and mid-sized businesses the kind of digital presence that used to be reserved for big brands.</p>
+    <div class="about-stats reveal">
+      <div class="stat-box">
+        <div class="stat-num">20+</div>
+        <div class="stat-label">Projects delivered</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Client satisfaction</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">48h</div>
+        <div class="stat-label">Avg. response time</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">3×</div>
+        <div class="stat-label">Avg. lead increase</div>
+      </div>
+    </div>
+  </div>
+  <div class="about-right reveal-right">
+    <div class="about-card">
+      <p style="font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:28px;">What we do</p>
+      <ul class="service-list">
+        <li class="service-item">
+          <div><div class="svc-name">Web Design</div><div class="svc-tag">Custom · Responsive · Fast</div></div>
+          <span class="svc-arrow">→</span>
+        </li>
+        <li class="service-item">
+          <div><div class="svc-name">Marketing Strategy</div><div class="svc-tag">Meta · Google · SEO</div></div>
+          <span class="svc-arrow">→</span>
+        </li>
+        <li class="service-item">
+          <div><div class="svc-name">Brand Identity</div><div class="svc-tag">Logo · Visual · Tone</div></div>
+          <span class="svc-arrow">→</span>
+        </li>
+        <li class="service-item">
+          <div><div class="svc-name">Landing Pages</div><div class="svc-tag">Conversion-focused</div></div>
+          <span class="svc-arrow">→</span>
+        </li>
+        <li class="service-item">
+          <div><div class="svc-name">Social Media</div><div class="svc-tag">Content · Ads · Growth</div></div>
+          <span class="svc-arrow">→</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- DIVIDER -->
+<div class="divider">
+  <div class="divider-line"></div>
+  <div class="divider-text">Our Work</div>
+  <div class="divider-line"></div>
+</div>
+
+<!-- WORK -->
+<section class="work" id="work">
+  <div class="section-header reveal">
+    <div>
+      <p class="section-label">Portfolio</p>
+      <h2 class="section-title">Selected <em>projects.</em></h2>
+    </div>
+    <a href="#contact" class="section-link">Start yours →</a>
+  </div>
+  <div class="work-grid">
+    <div class="work-card tall reveal">
+      <div class="work-card-bg" style="background:linear-gradient(135deg,#0f0e0a,#1a1500);">🍽️</div>
+      <div class="work-overlay"></div>
+      <div class="work-content">
+        <p class="work-tag">Web Design · Branding</p>
+        <h3 class="work-title">Aurelia Restaurant</h3>
+        <p class="work-sub">Fine dining · Mumbai</p>
+      </div>
+      <a href="#contact" class="work-card-link">↗</a>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:2px;">
+      <div class="work-card reveal">
+        <div class="work-card-bg" style="background:linear-gradient(135deg,#0a0f14,#001020);">💎</div>
+        <div class="work-overlay"></div>
+        <div class="work-content">
+          <p class="work-tag">E-commerce · Marketing</p>
+          <h3 class="work-title">Luxe Jewels</h3>
+          <p class="work-sub">Jewellery brand · Pune</p>
+        </div>
+        <a href="#contact" class="work-card-link">↗</a>
+      </div>
+      <div class="work-card reveal">
+        <div class="work-card-bg" style="background:linear-gradient(135deg,#0d0a14,#120020);">🏋️</div>
+        <div class="work-overlay"></div>
+        <div class="work-content">
+          <p class="work-tag">Web Design · WhatsApp Funnel</p>
+          <h3 class="work-title">Fit Nation Gym</h3>
+          <p class="work-sub">Fitness · Pune</p>
+        </div>
+        <a href="#contact" class="work-card-link">↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process">
+  <div class="section-header reveal">
+    <div>
+      <p class="section-label">How we work</p>
+      <h2 class="section-title">The <em>process.</em></h2>
+    </div>
+  </div>
+  <div class="process-steps">
+    <div class="process-step reveal">
+      <span class="step-num">01</span>
+      <div class="step-icon">🎯</div>
+      <h3 class="step-title">Discovery</h3>
+      <p class="step-text">We learn your business, your market, and your goals. No templates — we start from your reality.</p>
+    </div>
+    <div class="process-step reveal">
+      <span class="step-num">02</span>
+      <div class="step-icon">✏️</div>
+      <h3 class="step-title">Strategy</h3>
+      <p class="step-text">We map out the full plan — design direction, messaging, and how we'll drive actual leads.</p>
+    </div>
+    <div class="process-step reveal">
+      <span class="step-num">03</span>
+      <div class="step-icon">⚡</div>
+      <h3 class="step-title">Build</h3>
+      <p class="step-text">We design and develop your site or campaign. You get updates throughout — no disappearing acts.</p>
+    </div>
+    <div class="process-step reveal">
+      <span class="step-num">04</span>
+      <div class="step-icon">🚀</div>
+      <h3 class="step-title">Launch & Grow</h3>
+      <p class="step-text">We go live, then we don't stop. Ongoing support, optimisation, and results tracking.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DIVIDER -->
+<div class="divider">
+  <div class="divider-line"></div>
+  <div class="divider-text">Pricing</div>
+  <div class="divider-line"></div>
+</div>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="section-header reveal">
+    <div>
+      <p class="section-label">Transparent pricing</p>
+      <h2 class="section-title">Simple, clear <em>plans.</em></h2>
+    </div>
+  </div>
+  <div class="pricing-grid">
+    <div class="price-card reveal">
+      <p class="price-plan">Starter</p>
+      <div class="price-amount"><sup>₹</sup>14,999</div>
+      <p class="price-note">One-time · Delivered in 7 days</p>
+      <ul class="price-features">
+        <li class="price-feature"><span class="tick">✦</span> 5-page custom website</li>
+        <li class="price-feature"><span class="tick">✦</span> Mobile responsive</li>
+        <li class="price-feature"><span class="tick">✦</span> WhatsApp / contact integration</li>
+        <li class="price-feature"><span class="tick">✦</span> Basic SEO setup</li>
+        <li class="price-feature"><span class="off">—</span> Marketing campaign</li>
+        <li class="price-feature"><span class="off">—</span> Monthly support</li>
+      </ul>
+      <a href="#contact" class="price-btn">Get Started</a>
+    </div>
+    <div class="price-card featured reveal">
+      <span class="price-badge">Most Popular</span>
+      <p class="price-plan">Growth</p>
+      <div class="price-amount"><sup>₹</sup>24,999</div>
+      <p class="price-note">One-time + ₹4,999/mo support</p>
+      <ul class="price-features">
+        <li class="price-feature"><span class="tick">✦</span> 8-page custom website</li>
+        <li class="price-feature"><span class="tick">✦</span> Mobile responsive</li>
+        <li class="price-feature"><span class="tick">✦</span> WhatsApp funnel setup</li>
+        <li class="price-feature"><span class="tick">✦</span> Full SEO optimisation</li>
+        <li class="price-feature"><span class="tick">✦</span> 1 Meta / Google campaign</li>
+        <li class="price-feature"><span class="tick">✦</span> 1 month support included</li>
+      </ul>
+      <a href="#contact" class="price-btn">Get Started</a>
+    </div>
+    <div class="price-card reveal">
+      <p class="price-plan">Premium</p>
+      <div class="price-amount"><sup>₹</sup>49,999</div>
+      <p class="price-note">One-time + ongoing retainer</p>
+      <ul class="price-features">
+        <li class="price-feature"><span class="tick">✦</span> Full custom website</li>
+        <li class="price-feature"><span class="tick">✦</span> Brand identity design</li>
+        <li class="price-feature"><span class="tick">✦</span> WhatsApp + CRM setup</li>
+        <li class="price-feature"><span class="tick">✦</span> Full SEO + content</li>
+        <li class="price-feature"><span class="tick">✦</span> Multi-platform ads</li>
+        <li class="price-feature"><span class="tick">✦</span> 3 months support</li>
+      </ul>
+      <a href="#contact" class="price-btn">Get Started</a>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="reveal" style="text-align:center;max-width:640px;margin:0 auto 70px;">
+    <p class="section-label">Contact</p>
+    <h2 class="section-title">Let's build something <em>great.</em></h2>
+  </div>
+  <div class="contact-wrap">
+    <div class="contact-info reveal-left">
+      <p class="contact-intro">Tell us what you need. We'll tell you how we can make it <em>exceptional.</em></p>
+      <div class="contact-detail">
+        <div class="detail-icon">✉</div>
+        <div>
+          <p class="detail-title">Email</p>
+          <p class="detail-text">hello@vantage.studio</p>
+        </div>
+      </div>
+      <div class="contact-detail">
+        <div class="detail-icon">📱</div>
+        <div>
+          <p class="detail-title">WhatsApp</p>
+          <p class="detail-text">+91 XXXXX XXXXX<br><a href="https://wa.me/91XXXXXXXXXX?text=Hi%2C%20I%27d%20like%20to%20get%20a%20quote%20from%20Vantage" target="_blank" style="color:var(--gold);text-decoration:none;font-size:12px;font-family:var(--mono);letter-spacing:1px;">Chat now →</a></p>
+        </div>
+      </div>
+      <div class="contact-detail">
+        <div class="detail-icon">⏱</div>
+        <div>
+          <p class="detail-title">Response time</p>
+          <p class="detail-text">Within 24 hours, always.</p>
+        </div>
+      </div>
+    </div>
+    <form class="contact-form reveal-right" onsubmit="handleSubmit(event)">
+      <div class="form-row">
+        <div class="form-field">
+          <label>Your name</label>
+          <input type="text" placeholder="Raj Sharma" required>
+        </div>
+        <div class="form-field">
+          <label>Business name</label>
+          <input type="text" placeholder="Your Company">
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Email</label>
+        <input type="email" placeholder="raj@business.com" required>
+      </div>
+      <div class="form-field">
+        <label>What do you need?</label>
+        <select>
+          <option>Website design</option>
+          <option>Marketing campaign</option>
+          <option>Website + Marketing</option>
+          <option>Brand identity</option>
+          <option>Not sure yet</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Tell us more</label>
+        <textarea rows="4" placeholder="What's your business, your goals, your timeline..."></textarea>
+      </div>
+      <button type="submit" class="form-submit"><span>Send Enquiry →</span></button>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <a href="#" class="footer-logo">Van<em>tage</em></a>
+      <p class="footer-tagline">Premium web design and marketing for businesses that mean business.</p>
+      <div class="footer-socials">
+        <a class="footer-social" href="#">in</a>
+        <a class="footer-social" href="#">ig</a>
+        <a class="footer-social" href="#">tw</a>
+      </div>
+    </div>
+    <div>
+      <p class="footer-col-title">Services</p>
+      <ul class="footer-links">
+        <li><a href="#about">Web Design</a></li>
+        <li><a href="#about">Digital Marketing</a></li>
+        <li><a href="#about">Brand Identity</a></li>
+        <li><a href="#about">Landing Pages</a></li>
+        <li><a href="#about">SEO</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="footer-col-title">Company</p>
+      <ul class="footer-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#work">Work</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#contact">Get a Quote</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2024 Vantage Studio. All rights reserved.</p>
+    <p class="footer-copy">Built by <a href="#">Vantage</a></p>
+  </div>
+</footer>
+
+<script>
+// CURSOR
+const cur = document.getElementById('cur');
+const ring = document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e => {
+  mx=e.clientX; my=e.clientY;
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+});
+(function animRing(){
+  rx+=(mx-rx)*0.1; ry+=(my-ry)*0.1;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(animRing);
+})();
+document.querySelectorAll('a,button,.work-card,.price-card,.service-item,.process-step,.stat-box').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.classList.add('expand');ring.classList.add('expand');});
+  el.addEventListener('mouseleave',()=>{cur.classList.remove('expand');ring.classList.remove('expand');});
+});
+
+// NAV SCROLL
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('scrolled',scrollY>60);
+});
+
+// MOBILE MENU
+function toggleMob(){
+  document.getElementById('mob-menu').classList.toggle('open');
+}
+
+// SCROLL REVEAL
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add('up');obs.unobserve(e.target);}
+  });
+},{threshold:0.1});
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el=>obs.observe(el));
+
+// FORM
+function handleSubmit(e){
+  e.preventDefault();
+  const btn = e.target.querySelector('.form-submit');
+  btn.innerHTML='<span>Message sent ✓</span>';
+  btn.style.background='#2a6e3f';
+  setTimeout(()=>{
+    btn.innerHTML='<span>Send Enquiry →</span>';
+    btn.style.background='var(--gold)';
+    e.target.reset();
+  },3000);
+}
+</script>
+</body>
+</html>
